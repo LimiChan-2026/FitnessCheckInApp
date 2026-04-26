@@ -1,0 +1,182 @@
+<resources>
+    <string name="app_name">FitnessCheckInApp</string>
+    <string name="nav_home">首页</string>
+    <string name="nav_check_in">打卡</string>
+    <string name="nav_data">数据</string>
+    <string name="nav_mine">我的</string>
+    <string name="home_title">首页</string>
+    <string name="home_desc">查看你今天的运动概览和最新训练记录</string>
+    <string name="home_today_overview_title">今日运动概览</string>
+    <string name="home_today_hint">系统会根据今天的训练记录自动更新以下数据</string>
+    <string name="home_today_calorie_default">今日卡路里：0 千卡</string>
+    <string name="home_today_minutes_default">今日运动分钟：0 分钟</string>
+    <string name="home_today_count_default">今日打卡次数：0 次</string>
+    <string name="home_today_steps_default">今日步数：5680 步</string>
+    <string name="home_today_calorie_value">今日卡路里：%1$d 千卡</string>
+    <string name="home_today_minutes_value">今日运动分钟：%1$d 分钟</string>
+    <string name="home_today_count_value">今日打卡次数：%1$d 次</string>
+    <string name="home_today_steps_value">今日步数：%1$d 步</string>
+    <string name="home_total_overview_title">累计训练概览</string>
+    <string name="home_total_hint">以下数据基于所有历史训练记录自动累计</string>
+    <string name="home_total_count_default">累计打卡次数：0 次</string>
+    <string name="home_total_minutes_default">累计运动分钟：0 分钟</string>
+    <string name="home_streak_days_default">连续打卡天数：0 天</string>
+    <string name="home_total_count_value">累计打卡次数：%1$d 次</string>
+    <string name="home_total_minutes_value">累计运动分钟：%1$d 分钟</string>
+    <string name="home_streak_days_value">连续打卡天数：%1$d 天</string>
+    <string name="home_encouragement_done">今天已完成训练，继续保持！</string>
+    <string name="home_encouragement_not_yet">今天还没有打卡，开始一次训练吧！</string>
+    <string name="home_latest_record_title">最近一次运动记录</string>
+    <string name="home_latest_record_hint">展示最近保存到本地数据库中的训练信息</string>
+    <string name="home_latest_record_empty">最近一次运动：暂无记录</string>
+    <string name="home_latest_record_value">最近一次运动：%1$s\n运动时长：%2$d 分 %3$d 秒\n消耗卡路里：%4$d 千卡\n时间：%5$s</string>
+    <string name="check_in_title">训练打卡</string>
+    <string name="check_in_desc">请选择运动类型并开始本次训练</string>
+    <string name="check_in_section_type_title">选择训练类型</string>
+    <string name="check_in_section_type_hint">从下方选择本次训练项目，便于后续统计分析</string>
+    <string name="check_in_section_timer_title">训练计时</string>
+    <string name="check_in_section_timer_hint">开始后系统将自动计时，结束后可保存训练记录</string>
+    <string name="check_in_target_title">目标时长（分钟）</string>
+    <string name="check_in_target_hint">例如：30</string>
+    <string name="check_in_remark_title">运动备注</string>
+    <string name="check_in_remark_hint">记录今天的训练感受、内容或计划</string>
+    <string name="check_in_confirm_title">确认保存训练记录</string>
+    <string name="check_in_confirm_message">运动类型：%1$s\n运动时长：%2$d 分 %3$d 秒\n预计消耗卡路里：%4$d 千卡\n备注：%5$s</string>
+    <string name="check_in_no_remark">无</string>
+    <string name="data_title">历史数据</string>
+    <string name="data_desc">这里展示你的本地训练记录与统计信息</string>
+    <string name="data_filter_title">按日期筛选</string>
+    <string name="filter_all">全部记录</string>
+    <string name="filter_today">今日记录</string>
+    <string name="filter_last_7_days">最近7天</string>
+    <string name="data_summary_title">训练汇总</string>
+    <string name="data_summary_hint">根据当前筛选条件下的训练记录进行统计</string>
+    <string name="data_record_hint">以下为符合当前筛选条件的训练历史记录列表</string>
+    <string name="data_delete_title">确认删除记录</string>
+    <string name="data_delete_message">确定要删除这条“%1$s”运动记录吗？</string>
+
+    <string name="mine_title">个人中心</string>
+    <string name="mine_desc">查看个人信息、训练统计和获得的勋章</string>
+    <string name="mine_profile_hint">这里展示你的训练积累与个人勋章</string>
+    <string name="mine_badge_title">我的勋章</string>
+    <string name="mine_badge_hint">达成条件后会显示已解锁，未达成则保持未解锁状态</string>
+    <string name="mine_edit_nickname_title">修改昵称</string>
+    <string name="mine_about_title">关于系统</string>
+    <string name="mine_about_message">App 名称：健身打卡系统\n版本：1.0.0</string>
+    <string name="mine_nickname_value">昵称：%1$s</string>
+    <string name="mine_nickname_prefix">昵称：</string>
+    <string name="mine_avatar_desc">用户头像</string>
+
+    <string name="login_title">登录</string>
+    <string name="login_desc">请输入账号和密码进行本地登录</string>
+    <string name="register_title">注册</string>
+    <string name="register_desc">创建你的本地账号后即可登录使用</string>
+    <string name="forget_password_title">找回密码</string>
+    <string name="forget_password_desc">通过账号重置密码后重新登录</string>
+
+    <string name="label_sport_type">运动类型</string>
+    <string name="label_training_time">训练时间</string>
+
+    <string name="action_start">开始</string>
+    <string name="action_end">结束</string>
+    <string name="action_pause">暂停</string>
+    <string name="action_reset">重置</string>
+    <string name="action_save_record">保存训练记录</string>
+    <string name="action_login">登录</string>
+    <string name="action_logout">退出登录</string>
+    <string name="action_clear_records">清空训练记录</string>
+    <string name="action_delete">删除</string>
+    <string name="action_edit_nickname">修改昵称</string>
+    <string name="action_edit_avatar">修改头像</string>
+    <string name="action_about_system">关于系统</string>
+    <string name="action_confirm">确认</string>
+    <string name="action_cancel">取消</string>
+    <string name="action_register">注册</string>
+    <string name="action_reset_password">重置密码</string>
+    <string name="action_go_register">没有账号？去注册</string>
+    <string name="action_go_login">已有账号？去登录</string>
+    <string name="action_back_login">返回登录</string>
+    <string name="action_forget_password">忘记密码？</string>
+
+    <string name="hint_nickname">请输入昵称</string>
+    <string name="hint_username">请输入账号</string>
+    <string name="hint_password">请输入密码</string>
+    <string name="hint_confirm_password">请再次输入密码</string>
+    <string name="hint_new_password">请输入新密码</string>
+    <string name="hint_confirm_new_password">请再次输入新密码</string>
+
+    <string name="default_user_name">用户</string>
+    <string name="mine_total_count_default">累计打卡次数：0 次</string>
+    <string name="mine_total_minutes_default">累计运动分钟：0 分钟</string>
+    <string name="mine_total_count_value">累计打卡次数：%1$d 次</string>
+    <string name="mine_total_minutes_value">累计运动分钟：%1$d 分钟</string>
+
+    <string name="badge_newbie">新手勋章</string>
+    <string name="badge_persistence">坚持勋章</string>
+    <string name="badge_expert">达人勋章</string>
+    <string name="badge_energy">活力勋章</string>
+    <string name="badge_none">暂无勋章，继续加油</string>
+    <string name="badge_status_unlocked">已解锁</string>
+    <string name="badge_status_locked">未解锁</string>
+    <string name="badge_item_format">• %1$s：%2$s</string>
+
+    <string name="clear_records_title">确认清空</string>
+    <string name="clear_records_message">确定要清空所有训练记录吗？</string>
+
+    <string name="toast_enter_nickname">请输入昵称</string>
+    <string name="toast_enter_username">请输入账号</string>
+    <string name="toast_enter_password">请输入密码</string>
+    <string name="toast_enter_new_password">请输入新密码</string>
+    <string name="toast_password_not_match">两次密码不一致</string>
+    <string name="toast_account_exists">账号已存在</string>
+    <string name="toast_account_not_exists">账号不存在</string>
+    <string name="toast_register_success">注册成功，请登录</string>
+    <string name="toast_register_failed">注册失败，请重试</string>
+    <string name="toast_login_failed">账号或密码错误</string>
+    <string name="toast_reset_password_success">密码修改成功，请重新登录</string>
+    <string name="toast_reset_password_failed">密码修改失败，请重试</string>
+    <string name="toast_nickname_update_success">昵称修改成功</string>
+    <string name="toast_avatar_update_success">头像修改成功</string>
+    <string name="toast_avatar_update_failed">头像修改失败</string>
+    <string name="toast_logout_success">已退出登录</string>
+    <string name="toast_permission_required">请授予读取图片权限后再试</string>
+    <string name="toast_clear_records_success">训练记录已清空</string>
+
+    <string name="sport_type_hint">请选择运动类型</string>
+    <string name="sport_running">跑步</string>
+    <string name="sport_cycling">骑行</string>
+    <string name="sport_fitness">健身</string>
+    <string name="sport_yoga">瑜伽</string>
+    <string name="sport_jump_rope">跳绳</string>
+    <string name="sport_swimming">游泳</string>
+
+    <string name="toast_select_sport_type">请选择运动类型</string>
+    <string name="toast_start_training_first">请先开始训练</string>
+    <string name="toast_invalid_target_minutes">请输入正确的目标时长</string>
+    <string name="toast_save_success">保存成功</string>
+    <string name="toast_save_failed">保存失败</string>
+    <string name="toast_target_completed">恭喜你完成目标！</string>
+    <string name="toast_record_saved_keep_going">记录已保存，下次继续加油！</string>
+
+    <string name="summary_total_count_default">总运动次数：0 次</string>
+    <string name="summary_total_minutes_default">总运动分钟：0 分钟</string>
+    <string name="summary_total_calorie_default">总消耗卡路里：0 千卡</string>
+    <string name="summary_total_count_value">总运动次数：%1$d 次</string>
+    <string name="summary_total_minutes_value">总运动分钟：%1$d 分钟</string>
+    <string name="summary_total_calorie_value">总消耗卡路里：%1$d 千卡</string>
+    <string name="record_list_title">历史记录</string>
+    <string name="empty_record">暂无运动记录</string>
+    <string name="record_duration_value">运动时长：%1$d 分 %2$d 秒</string>
+    <string name="record_calorie_value">消耗卡路里：%1$d 千卡</string>
+    <string name="record_time_value">打卡时间：%1$s</string>
+
+    <string-array name="sport_types">
+        <item>@string/sport_type_hint</item>
+        <item>@string/sport_running</item>
+        <item>@string/sport_cycling</item>
+        <item>@string/sport_fitness</item>
+        <item>@string/sport_yoga</item>
+        <item>@string/sport_jump_rope</item>
+        <item>@string/sport_swimming</item>
+    </string-array>
+</resources>

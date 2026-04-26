@@ -1,0 +1,31 @@
+# Android Studio / IntelliJ
+*.iml
+.idea/
+.vscode/
+
+# Gradle
+.gradle/
+build/
+app/build/
+
+# Local config
+local.properties
+
+# Generated files
+captures/
+.externalNativeBuild/
+.cxx/
+
+# APK / build outputs
+*.apk
+*.aab
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Cursor / LLM chat history
+/.llm-chat-history/
