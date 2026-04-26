@@ -1,15 +1,16 @@
 package com.example.fitnesscheckinapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -18,6 +19,10 @@ import java.util.Locale;
 import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final String PREF_USER = "pref_user";
+    private static final String KEY_IS_LOGIN = "is_login";
+    private static final String KEY_USERNAME = "username";
 
     private static final int MOCK_TODAY_STEPS = 5680;
 
@@ -31,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvEncouragement;
     private TextView tvLatestRecord;
     private DBHelper dbHelper;
+    private String currentUsername = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +46,18 @@ public class MainActivity extends AppCompatActivity {
         dbHelper = new DBHelper(this);
         initViews();
         setupBottomNavigation();
+    }
+
+    private boolean ensureLoginUser() {
+        SharedPreferences sp = getSharedPreferences(PREF_USER, MODE_PRIVATE);
+        boolean isLogin = sp.getBoolean(KEY_IS_LOGIN, false);
+        currentUsername = sp.getString(KEY_USERNAME, "");
+        if (!isLogin || TextUtils.isEmpty(currentUsername)) {
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+            return false;
+        }
+        return true;
     }
 
     private void initViews() {
@@ -55,6 +73,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadHomeData() {
+        if (!ensureLoginUser()) {
+            return;
+        }
+
         int todayCalorie = 0;
         int todayDurationSeconds = 0;
         int todayCount = 0;
@@ -73,8 +95,8 @@ public class MainActivity extends AppCompatActivity {
                         DBHelper.COLUMN_CREATE_TIME,
                         DBHelper.COLUMN_SPORT_TYPE
                 },
-                null,
-                null,
+                DBHelper.COLUMN_USERNAME + " = ?",
+                new String[]{currentUsername},
                 null,
                 null,
                 DBHelper.COLUMN_ID + " DESC"
@@ -118,8 +140,8 @@ public class MainActivity extends AppCompatActivity {
         Cursor latestCursor = database.query(
                 DBHelper.TABLE_SPORT_RECORD,
                 null,
-                null,
-                null,
+                DBHelper.COLUMN_USERNAME + " = ?",
+                new String[]{currentUsername},
                 null,
                 null,
                 DBHelper.COLUMN_ID + " DESC",

@@ -1,12 +1,16 @@
 package com.example.fitnesscheckinapp;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,9 +26,14 @@ import java.util.Locale;
 
 public class DataActivity extends AppCompatActivity {
 
+    private static final String PREF_USER = "pref_user";
+    private static final String KEY_IS_LOGIN = "is_login";
+    private static final String KEY_USERNAME = "username";
+
     private static final int FILTER_ALL = 0;
     private static final int FILTER_TODAY = 1;
     private static final int FILTER_LAST_7_DAYS = 2;
+    private static final int FILTER_SPECIFIC_DATE = 3;
 
     private TextView tvTotalCount;
     private TextView tvTotalMinutes;
@@ -34,10 +43,13 @@ public class DataActivity extends AppCompatActivity {
     private Button btnFilterAll;
     private Button btnFilterToday;
     private Button btnFilterLast7Days;
+    private Button btnFilterDate;
     private DBHelper dbHelper;
     private final List<SportRecord> recordList = new ArrayList<>();
     private RecordAdapter recordAdapter;
     private int currentFilter = FILTER_ALL;
+    private String selectedDate = "";
+    private String currentUsername = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +61,6 @@ public class DataActivity extends AppCompatActivity {
         setupRecyclerView();
         setupFilterButtons();
         setupBottomNavigation();
-        loadRecords();
     }
 
     private void initViews() {
@@ -61,6 +72,7 @@ public class DataActivity extends AppCompatActivity {
         btnFilterAll = findViewById(R.id.btnFilterAll);
         btnFilterToday = findViewById(R.id.btnFilterToday);
         btnFilterLast7Days = findViewById(R.id.btnFilterLast7Days);
+        btnFilterDate = findViewById(R.id.btnFilterDate);
     }
 
     private void setupRecyclerView() {
@@ -72,22 +84,61 @@ public class DataActivity extends AppCompatActivity {
     private void setupFilterButtons() {
         btnFilterAll.setOnClickListener(v -> {
             currentFilter = FILTER_ALL;
+            selectedDate = "";
             loadRecords();
         });
         btnFilterToday.setOnClickListener(v -> {
             currentFilter = FILTER_TODAY;
+            selectedDate = "";
             loadRecords();
         });
         btnFilterLast7Days.setOnClickListener(v -> {
             currentFilter = FILTER_LAST_7_DAYS;
+            selectedDate = "";
             loadRecords();
         });
+        btnFilterDate.setOnClickListener(v -> showDatePicker());
         updateFilterButtonState();
     }
 
-    private void loadRecords() {
-        recordList.clear();
+    private boolean ensureLoginUser() {
+        SharedPreferences sp = getSharedPreferences(PREF_USER, MODE_PRIVATE);
+        boolean isLogin = sp.getBoolean(KEY_IS_LOGIN, false);
+        currentUsername = sp.getString(KEY_USERNAME, "");
+        if (!isLogin || TextUtils.isEmpty(currentUsername)) {
+            Toast.makeText(this, R.string.toast_please_login_first, Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+            return false;
+        }
+        return true;
+    }
 
+    private void showDatePicker() {
+        Calendar c = Calendar.getInstance();
+        DatePickerDialog dialog = new DatePickerDialog(
+                this,
+                (view, year, month, dayOfMonth) -> {
+                    selectedDate = String.format(Locale.getDefault(), "%04d-%02d-%02d", year, month + 1, dayOfMonth);
+                    currentFilter = FILTER_SPECIFIC_DATE;
+                    loadRecords();
+                    if (recordList.isEmpty()) {
+                        Toast.makeText(this, R.string.toast_no_record_on_date, Toast.LENGTH_SHORT).show();
+                    }
+                },
+                c.get(Calendar.YEAR),
+                c.get(Calendar.MONTH),
+                c.get(Calendar.DAY_OF_MONTH)
+        );
+        dialog.show();
+    }
+
+    private void loadRecords() {
+        if (!ensureLoginUser()) {
+            return;
+        }
+
+        recordList.clear();
         int totalCount = 0;
         int totalDurationSeconds = 0;
         int totalCalorie = 0;
@@ -96,8 +147,8 @@ public class DataActivity extends AppCompatActivity {
         Cursor cursor = database.query(
                 DBHelper.TABLE_SPORT_RECORD,
                 null,
-                null,
-                null,
+                DBHelper.COLUMN_USERNAME + " = ?",
+                new String[]{currentUsername},
                 null,
                 null,
                 DBHelper.COLUMN_ID + " DESC"
@@ -114,13 +165,14 @@ public class DataActivity extends AppCompatActivity {
             int duration = cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.COLUMN_DURATION));
             int calorie = cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.COLUMN_CALORIE));
             String createTime = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.COLUMN_CREATE_TIME));
-            String datePart = createTime.substring(0, 10);
+            String remark = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.COLUMN_REMARK));
+            String datePart = createTime != null && createTime.length() >= 10 ? createTime.substring(0, 10) : "";
 
             if (!matchesFilter(datePart, todayDate, last7DaysStart)) {
                 continue;
             }
 
-            recordList.add(new SportRecord(id, sportType, duration, calorie, createTime));
+            recordList.add(new SportRecord(id, sportType, duration, calorie, createTime, remark));
             totalCount++;
             totalDurationSeconds += duration;
             totalCalorie += calorie;
@@ -150,13 +202,28 @@ public class DataActivity extends AppCompatActivity {
         if (currentFilter == FILTER_LAST_7_DAYS) {
             return datePart.compareTo(last7DaysStart) >= 0 && datePart.compareTo(todayDate) <= 0;
         }
+        if (currentFilter == FILTER_SPECIFIC_DATE) {
+            return !TextUtils.isEmpty(selectedDate) && selectedDate.equals(datePart);
+        }
         return true;
     }
 
     private void updateFilterButtonState() {
-        btnFilterAll.setEnabled(currentFilter != FILTER_ALL);
-        btnFilterToday.setEnabled(currentFilter != FILTER_TODAY);
-        btnFilterLast7Days.setEnabled(currentFilter != FILTER_LAST_7_DAYS);
+        btnFilterAll.setEnabled(true);
+        btnFilterToday.setEnabled(true);
+        btnFilterLast7Days.setEnabled(true);
+        btnFilterDate.setEnabled(true);
+
+        btnFilterAll.setClickable(true);
+        btnFilterToday.setClickable(true);
+        btnFilterLast7Days.setClickable(true);
+        btnFilterDate.setClickable(true);
+
+        if (currentFilter == FILTER_SPECIFIC_DATE && !TextUtils.isEmpty(selectedDate)) {
+            btnFilterDate.setText(getString(R.string.filter_specific_date_value, selectedDate));
+        } else {
+            btnFilterDate.setText(R.string.filter_specific_date);
+        }
     }
 
     private void showDeleteDialog(SportRecord record) {
@@ -169,11 +236,14 @@ public class DataActivity extends AppCompatActivity {
     }
 
     private void deleteRecord(SportRecord record) {
+        if (!ensureLoginUser()) {
+            return;
+        }
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         database.delete(
                 DBHelper.TABLE_SPORT_RECORD,
-                DBHelper.COLUMN_ID + " = ?",
-                new String[]{String.valueOf(record.getId())}
+                DBHelper.COLUMN_ID + " = ? AND " + DBHelper.COLUMN_USERNAME + " = ?",
+                new String[]{String.valueOf(record.getId()), currentUsername}
         );
         loadRecords();
     }

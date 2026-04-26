@@ -42,6 +42,10 @@
     <string name="check_in_remark_hint">记录今天的训练感受、内容或计划</string>
     <string name="check_in_confirm_title">确认保存训练记录</string>
     <string name="check_in_confirm_message">运动类型：%1$s\n运动时长：%2$d 分 %3$d 秒\n预计消耗卡路里：%4$d 千卡\n备注：%5$s</string>
+    <string name="check_in_target_not_reached_title">未达到目标时长</string>
+    <string name="check_in_target_not_reached_message">本次运动未达到目标时长，是否仍然保存？</string>
+    <string name="check_in_end_training_title">结束训练</string>
+    <string name="check_in_end_training_message">是否保存本次训练记录？</string>
     <string name="check_in_no_remark">无</string>
     <string name="data_title">历史数据</string>
     <string name="data_desc">这里展示你的本地训练记录与统计信息</string>
@@ -49,6 +53,8 @@
     <string name="filter_all">全部记录</string>
     <string name="filter_today">今日记录</string>
     <string name="filter_last_7_days">最近7天</string>
+    <string name="filter_specific_date">指定日期</string>
+    <string name="filter_specific_date_value">指定日期：%1$s</string>
     <string name="data_summary_title">训练汇总</string>
     <string name="data_summary_hint">根据当前筛选条件下的训练记录进行统计</string>
     <string name="data_record_hint">以下为符合当前筛选条件的训练历史记录列表</string>
@@ -80,6 +86,8 @@
     <string name="action_start">开始</string>
     <string name="action_end">结束</string>
     <string name="action_pause">暂停</string>
+    <string name="action_resume">继续</string>
+    <string name="action_restart">重新开始</string>
     <string name="action_reset">重置</string>
     <string name="action_save_record">保存训练记录</string>
     <string name="action_login">登录</string>
@@ -90,6 +98,8 @@
     <string name="action_edit_avatar">修改头像</string>
     <string name="action_about_system">关于系统</string>
     <string name="action_confirm">确认</string>
+    <string name="action_confirm_save">确认保存</string>
+    <string name="action_save">保存</string>
     <string name="action_cancel">取消</string>
     <string name="action_register">注册</string>
     <string name="action_reset_password">重置密码</string>
@@ -141,6 +151,8 @@
     <string name="toast_logout_success">已退出登录</string>
     <string name="toast_permission_required">请授予读取图片权限后再试</string>
     <string name="toast_clear_records_success">训练记录已清空</string>
+    <string name="toast_please_login_first">请先登录</string>
+    <string name="toast_no_record_on_date">该日期暂无记录</string>
 
     <string name="sport_type_hint">请选择运动类型</string>
     <string name="sport_running">跑步</string>
@@ -153,6 +165,11 @@
     <string name="toast_select_sport_type">请选择运动类型</string>
     <string name="toast_start_training_first">请先开始训练</string>
     <string name="toast_invalid_target_minutes">请输入正确的目标时长</string>
+    <string name="toast_finish_before_save">请先结束本次计时再保存</string>
+    <string name="toast_record_already_saved">本次训练已保存</string>
+    <string name="toast_training_save_success">训练记录保存成功</string>
+    <string name="toast_duration_cannot_be_zero">运动时长不能为 0</string>
+    <string name="toast_save_cancelled">已取消保存</string>
     <string name="toast_save_success">保存成功</string>
     <string name="toast_save_failed">保存失败</string>
     <string name="toast_target_completed">恭喜你完成目标！</string>
@@ -169,6 +186,7 @@
     <string name="record_duration_value">运动时长：%1$d 分 %2$d 秒</string>
     <string name="record_calorie_value">消耗卡路里：%1$d 千卡</string>
     <string name="record_time_value">打卡时间：%1$s</string>
+    <string name="record_remark_value">运动备注：%1$s</string>
 
     <string-array name="sport_types">
         <item>@string/sport_type_hint</item>

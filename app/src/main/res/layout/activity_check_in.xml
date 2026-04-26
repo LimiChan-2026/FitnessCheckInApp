@@ -191,16 +191,6 @@
                         android:textColor="@color/text_primary"
                         android:textSize="15sp" />
                 </LinearLayout>
-
-                <Button
-                    android:id="@+id/btnSaveRecord"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_marginTop="14dp"
-                    android:background="@drawable/bg_button_primary"
-                    android:text="@string/action_save_record"
-                    android:textColor="@color/white"
-                    android:textSize="16sp" />
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

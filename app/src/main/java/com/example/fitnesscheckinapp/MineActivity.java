@@ -212,9 +212,17 @@ public class MineActivity extends AppCompatActivity {
     }
 
     private void loadSportSummary() {
-        int totalCount = 0, totalDurationSeconds = 0;
-        Cursor c = dbHelper.getReadableDatabase().query(DBHelper.TABLE_SPORT_RECORD,
-                new String[]{DBHelper.COLUMN_ID, DBHelper.COLUMN_DURATION}, null, null, null, null, null);
+        int totalCount = 0;
+        int totalDurationSeconds = 0;
+        Cursor c = dbHelper.getReadableDatabase().query(
+                DBHelper.TABLE_SPORT_RECORD,
+                new String[]{DBHelper.COLUMN_ID, DBHelper.COLUMN_DURATION},
+                DBHelper.COLUMN_USERNAME + "=?",
+                new String[]{username},
+                null,
+                null,
+                null
+        );
         while (c.moveToNext()) {
             totalCount++;
             totalDurationSeconds += c.getInt(c.getColumnIndexOrThrow(DBHelper.COLUMN_DURATION));
@@ -254,7 +262,11 @@ public class MineActivity extends AppCompatActivity {
     }
 
     private void clearRecords() {
-        dbHelper.getWritableDatabase().delete(DBHelper.TABLE_SPORT_RECORD, null, null);
+        dbHelper.getWritableDatabase().delete(
+                DBHelper.TABLE_SPORT_RECORD,
+                DBHelper.COLUMN_USERNAME + "=?",
+                new String[]{username}
+        );
         loadSportSummary();
         Toast.makeText(this, R.string.toast_clear_records_success, Toast.LENGTH_SHORT).show();
     }

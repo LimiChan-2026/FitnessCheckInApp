@@ -9,7 +9,7 @@ import androidx.annotation.Nullable;
 public class DBHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "fitness_check_in.db";
-    public static final int DATABASE_VERSION = 2;
+    public static final int DATABASE_VERSION = 4;
 
     public static final String TABLE_SPORT_RECORD = "sport_record";
     public static final String COLUMN_ID = "id";
@@ -17,10 +17,11 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String COLUMN_DURATION = "duration";
     public static final String COLUMN_CALORIE = "calorie";
     public static final String COLUMN_CREATE_TIME = "create_time";
+    public static final String COLUMN_USERNAME = "username";
+    public static final String COLUMN_REMARK = "remark";
 
     public static final String TABLE_USER_INFO = "user_info";
     public static final String COLUMN_USER_ID = "id";
-    public static final String COLUMN_USERNAME = "username";
     public static final String COLUMN_PASSWORD = "password";
     public static final String COLUMN_NICKNAME = "nickname";
     public static final String COLUMN_AVATAR_PATH = "avatar_path";
@@ -41,6 +42,18 @@ public class DBHelper extends SQLiteOpenHelper {
         if (oldVersion < 2) {
             db.execSQL(buildCreateUserInfoTableSql());
         }
+        if (oldVersion < 3) {
+            try {
+                db.execSQL("ALTER TABLE " + TABLE_SPORT_RECORD + " ADD COLUMN " + COLUMN_USERNAME + " TEXT");
+            } catch (Exception ignored) {
+            }
+        }
+        if (oldVersion < 4) {
+            try {
+                db.execSQL("ALTER TABLE " + TABLE_SPORT_RECORD + " ADD COLUMN " + COLUMN_REMARK + " TEXT");
+            } catch (Exception ignored) {
+            }
+        }
     }
 
     private String buildCreateSportRecordTableSql() {
@@ -49,7 +62,9 @@ public class DBHelper extends SQLiteOpenHelper {
                 + COLUMN_SPORT_TYPE + " TEXT NOT NULL, "
                 + COLUMN_DURATION + " INTEGER NOT NULL, "
                 + COLUMN_CALORIE + " INTEGER NOT NULL, "
-                + COLUMN_CREATE_TIME + " TEXT NOT NULL)";
+                + COLUMN_CREATE_TIME + " TEXT NOT NULL, "
+                + COLUMN_USERNAME + " TEXT, "
+                + COLUMN_REMARK + " TEXT)";
     }
 
     private String buildCreateUserInfoTableSql() {

@@ -50,6 +50,17 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.RecordView
                 R.string.record_time_value,
                 record.getCreateTime()
         ));
+
+        if (record.getRemark() == null || record.getRemark().trim().isEmpty()) {
+            holder.tvRemark.setVisibility(View.GONE);
+        } else {
+            holder.tvRemark.setVisibility(View.VISIBLE);
+            holder.tvRemark.setText(holder.itemView.getContext().getString(
+                    R.string.record_remark_value,
+                    record.getRemark()
+            ));
+        }
+
         holder.btnDeleteRecord.setOnClickListener(v -> deleteClickListener.onDeleteClick(record));
     }
 
@@ -64,6 +75,7 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.RecordView
         private final TextView tvDuration;
         private final TextView tvCalorie;
         private final TextView tvCreateTime;
+        private final TextView tvRemark;
         private final Button btnDeleteRecord;
 
         public RecordViewHolder(@NonNull View itemView) {
@@ -72,6 +84,7 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.RecordView
             tvDuration = itemView.findViewById(R.id.tvItemDuration);
             tvCalorie = itemView.findViewById(R.id.tvItemCalorie);
             tvCreateTime = itemView.findViewById(R.id.tvItemCreateTime);
+            tvRemark = itemView.findViewById(R.id.tvItemRemark);
             btnDeleteRecord = itemView.findViewById(R.id.btnDeleteRecord);
         }
     }
