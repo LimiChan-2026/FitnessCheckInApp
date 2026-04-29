@@ -152,10 +152,10 @@ public class DataActivity extends AppCompatActivity {
         DatePickerDialog dialog = new DatePickerDialog(
                 this,
                 (view, year, month, dayOfMonth) -> {
-                    // 格式化日期为 yyyy-MM-dd
                     selectedDate = String.format(Locale.getDefault(), "%04d-%02d-%02d", year, month + 1, dayOfMonth);
                     currentFilter = FILTER_SPECIFIC_DATE;
-                    loadRecords(); // 刷新数据
+                    loadRecords();
+                    updateFilterButtonState();
                     if (recordList.isEmpty()) {
                         Toast.makeText(this, R.string.toast_no_record_on_date, Toast.LENGTH_SHORT).show();
                     }
@@ -267,7 +267,14 @@ public class DataActivity extends AppCompatActivity {
         btnFilterLast7Days.setEnabled(true);
         btnFilterDate.setEnabled(true);
 
-        // 如果是特定日期筛选，显示具体选中的日期
+        if (currentFilter == FILTER_ALL) {
+            btnFilterAll.setEnabled(false);
+        } else if (currentFilter == FILTER_TODAY) {
+            btnFilterToday.setEnabled(false);
+        } else if (currentFilter == FILTER_LAST_7_DAYS) {
+            btnFilterLast7Days.setEnabled(false);
+        }
+
         if (currentFilter == FILTER_SPECIFIC_DATE && !TextUtils.isEmpty(selectedDate)) {
             btnFilterDate.setText(getString(R.string.filter_specific_date_value, selectedDate));
         } else {
