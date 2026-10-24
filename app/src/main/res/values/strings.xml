@@ -17,7 +17,7 @@
     <string name="leaderboard_empty">暂无上榜数据，先去打卡吧</string>
     <string name="leaderboard_row_value">第%1$d名  %2$s  运动%3$d分钟 · 打卡%4$d次</string>
     <string name="social_feed_title">好友动态</string>
-    <string name="social_feed_hint">关注的好友打卡后会出现在这里，每15秒自动更新，也可下拉刷新</string>
+    <string name="social_feed_hint">关注的好友打卡后会出现在这里</string>
     <string name="feed_empty">还没有动态，点上方“发现好友”关注伙伴后就能看到 TA 们的打卡</string>
     <string name="feed_sport_info_value">完成了 %1$s，时长 %2$d 分 %3$d 秒，消耗 %4$d 千卡</string>
     <string name="feed_time_value">打卡时间：%1$s</string>
