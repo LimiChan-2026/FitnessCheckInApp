@@ -285,15 +285,27 @@ public class SocialActivity extends AppCompatActivity {
     }
 
     /**
-     * 点赞/取消点赞
+     * 点赞/取消点赞：点赞成功时爱心爆炸动画由 Adapter 持久帧切换触发，
+     * 新点赞额外从头播放一遍爆炸效果。
      */
     private void onLikeClicked(FeedEntry entry, int position) {
+        boolean wasLiked = entry.isLikedByMe();
         apiClient.toggleLike(currentUsername, entry.getRecordId(), new ApiClient.Callback() {
             @Override
             public void onSuccess(JSONObject data) {
-                entry.setLikedByMe(data.optBoolean("liked"));
+                boolean nowLiked = data.optBoolean("liked");
+                entry.setLikedByMe(nowLiked);
                 entry.setLikeCount(data.optInt("likeCount"));
                 feedAdapter.notifyItemChanged(position);
+                // 新点赞：播放完整爱心爆炸动画
+                if (nowLiked && !wasLiked && rvFeed.findViewHolderForAdapterPosition(position) != null) {
+                    var holder = (FeedAdapter.FeedViewHolder) rvFeed.findViewHolderForAdapterPosition(position);
+                    if (holder != null) {
+                        holder.lottieHeart.setMinAndMaxProgress(0f, 1f);
+                        holder.lottieHeart.setProgress(0f);
+                        holder.lottieHeart.playAnimation();
+                    }
+                }
             }
 
             @Override

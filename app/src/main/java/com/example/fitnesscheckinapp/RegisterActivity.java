@@ -88,18 +88,13 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onSuccess(JSONObject data) {
                 // 云端注册成功 → 本地双写
-                if (saveLocalUser(username, password)) {
-                    Toast.makeText(RegisterActivity.this,
-                            R.string.toast_register_success, Toast.LENGTH_SHORT).show();
-                    Nav.flow(RegisterActivity.this, new Intent(RegisterActivity.this, LoginActivity.class));
-                    finish();
-                } else {
-                    // 云端成功但本地已同名（历史数据冲突），仍允许去登录
-                    Toast.makeText(RegisterActivity.this,
-                            R.string.toast_register_success_local_exists, Toast.LENGTH_SHORT).show();
-                    Nav.flow(RegisterActivity.this, new Intent(RegisterActivity.this, LoginActivity.class));
-                    finish();
-                }
+                boolean localSaved = saveLocalUser(username, password);
+                String text = localSaved
+                        ? getString(R.string.toast_register_success)
+                        : getString(R.string.toast_register_success_local_exists);
+                // 成功打勾动画播放完毕后自动跳转登录页（AnimDialog 播完自动 dismiss）
+                AnimDialog.show(RegisterActivity.this, "animations/success.json", text);
+                registerSuccessJump();
             }
 
             @Override
@@ -118,6 +113,19 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     /**
+     * 注册成功后延迟跳转登录页：留出打勾动画的展示时间
+     */
+    private void registerSuccessJump() {
+        new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
+            if (isFinishing()) {
+                return;
+            }
+            Nav.flow(RegisterActivity.this, new Intent(RegisterActivity.this, LoginActivity.class));
+            finish();
+        }, 1800);
+    }
+
+    /**
      * 离线降级注册：账号只在本机有效，联网后仍可登录同一账号
      */
     private void localRegister(String username, String password) {
@@ -126,10 +134,9 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
         if (saveLocalUser(username, password)) {
-            Toast.makeText(this, R.string.toast_register_success_offline,
-                    Toast.LENGTH_SHORT).show();
-            Nav.flow(this, new Intent(this, LoginActivity.class));
-            finish();
+            AnimDialog.show(this, "animations/success.json",
+                    getString(R.string.toast_register_success_offline));
+            registerSuccessJump();
         } else {
             Toast.makeText(this, R.string.toast_register_failed, Toast.LENGTH_SHORT).show();
         }

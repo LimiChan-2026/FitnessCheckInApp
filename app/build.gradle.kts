@@ -43,6 +43,8 @@ dependencies {
     implementation("androidx.recyclerview:recyclerview:1.3.2")
     // 社区页下拉刷新组件（SwipeRefreshLayout）
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+    // Lottie 矢量动画引擎（点赞爱心/跑步/庆祝动画，assets/animations/*.json）
+    implementation("com.airbnb.android:lottie:6.6.2")
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

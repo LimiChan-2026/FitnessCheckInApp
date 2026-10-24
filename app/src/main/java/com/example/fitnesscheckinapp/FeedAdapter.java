@@ -4,15 +4,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.airbnb.lottie.LottieAnimationView;
+
 import java.util.List;
 
 /**
- * 好友动态列表适配器：每条动态展示打卡信息 + 点赞按钮 + 关注按钮
+ * 好友动态列表适配器：每条动态展示打卡信息 + Lottie 爱心点赞 + 关注按钮
  */
 public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder> {
 
@@ -73,10 +76,16 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
                     R.string.record_remark_value, entry.getRemark()));
         }
 
-        // 点赞按钮：状态随 likedByMe 变化
-        holder.btnLike.setText(context.getString(
-                entry.isLikedByMe() ? R.string.feed_liked : R.string.feed_like,
-                entry.getLikeCount()));
+        // 点赞区域：Lottie 爱心（已赞停在爱心帧）+ 计数
+        holder.lottieHeart.setMinAndMaxProgress(0f, 1f);
+        if (entry.isLikedByMe()) {
+            // 已赞：直接停在动画最后一帧（完整爱心）
+            holder.lottieHeart.setMinAndMaxProgress(0.55f, 1f);
+            holder.lottieHeart.setProgress(1f);
+        } else {
+            holder.lottieHeart.setProgress(0f);
+        }
+        holder.tvLikeCount.setText(context.getString(R.string.feed_like_count, entry.getLikeCount()));
         holder.btnLike.setOnClickListener(v -> {
             if (likeListener != null) {
                 likeListener.onLikeClick(entry, holder.getAdapterPosition());
@@ -110,7 +119,9 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
         private final TextView tvSportInfo;
         private final TextView tvCreateTime;
         private final TextView tvRemark;
-        private final Button btnLike;
+        private final LinearLayout btnLike;
+        final LottieAnimationView lottieHeart;
+        private final TextView tvLikeCount;
         private final Button btnFollow;
 
         public FeedViewHolder(@NonNull View itemView) {
@@ -120,6 +131,8 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
             tvCreateTime = itemView.findViewById(R.id.tvFeedTime);
             tvRemark = itemView.findViewById(R.id.tvFeedRemark);
             btnLike = itemView.findViewById(R.id.btnFeedLike);
+            lottieHeart = itemView.findViewById(R.id.lottieHeart);
+            tvLikeCount = itemView.findViewById(R.id.tvLikeCount);
             btnFollow = itemView.findViewById(R.id.btnFeedFollow);
         }
     }

@@ -303,7 +303,9 @@ public class CheckInActivity extends AppCompatActivity {
 
         long result = database.insert(DBHelper.TABLE_SPORT_RECORD, null, values);
         if (result != -1) {
-            Toast.makeText(this, R.string.toast_training_save_success, Toast.LENGTH_SHORT).show();
+            // 保存成功：庆祝彩带动画（自动消失），比 Toast 更有仪式感
+            AnimDialog.show(this, "animations/celebration.json",
+                    getString(R.string.toast_training_save_success));
             // 异步同步到服务端（好友动态与排行榜数据来源），失败不影响本地使用
             syncRecordToServer(username, sportType, duration, calorie, createTime, remark);
             resetTraining(true); // 保存成功，清空所有输入

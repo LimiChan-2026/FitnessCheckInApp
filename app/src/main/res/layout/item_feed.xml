@@ -65,15 +65,32 @@
             android:textColor="@color/text_primary"
             android:textSize="13sp" />
 
-        <Button
+        <!-- 点赞按钮：Lottie 爱心（点赞时爆炸动画）+ 计数 -->
+        <LinearLayout
             android:id="@+id/btnFeedLike"
             android:layout_width="wrap_content"
             android:layout_height="38dp"
             android:background="@drawable/bg_button_secondary"
+            android:gravity="center_vertical"
             android:minWidth="0dp"
-            android:paddingHorizontal="16dp"
-            android:text="@string/feed_like"
-            android:textColor="@color/text_primary"
-            android:textSize="13sp" />
+            android:orientation="horizontal"
+            android:paddingHorizontal="12dp">
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/lottieHeart"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                app:lottie_fileName="animations/heart.json" />
+
+            <TextView
+                android:id="@+id/tvLikeCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="@string/feed_like_count"
+                android:textColor="@color/text_primary"
+                android:textSize="13sp" />
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>
