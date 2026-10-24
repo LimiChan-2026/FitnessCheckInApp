@@ -272,19 +272,19 @@ public class FitnessService {
         return m;
     }
 
-    /** 用户搜索（用于添加关注），排除自己 */
+    /** 用户搜索（用于添加关注）：按用户名或昵称模糊匹配，排除自己 */
     public List<Map<String, Object>> searchUsers(String keyword, String excludeUsername) throws SQLException {
         String like = "%" + (keyword == null ? "" : keyword.trim()) + "%";
         return db.queryList(
                 "SELECT username, nickname FROM users"
-                        + " WHERE username LIKE ? AND username <> ?"
+                        + " WHERE (username LIKE ? OR IFNULL(nickname, '') LIKE ?) AND username <> ?"
                         + " ORDER BY username LIMIT 20",
                 rs -> {
                     Map<String, Object> m = new LinkedHashMap<>();
                     m.put("username", rs.getString("username"));
                     m.put("nickname", rs.getString("nickname"));
                     return m;
-                }, like, excludeUsername);
+                }, like, like, excludeUsername);
     }
 
     /** 我关注了谁 / 谁关注我 的数量与列表 */

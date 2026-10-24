@@ -103,12 +103,12 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
             }
         });
 
-        // 关注按钮：自己的动态不显示关注按钮
+        // 关注按钮：自己的动态不显示；动态流中的其他人必然已关注，按钮显示“已关注”（点击=取消关注）
         if (entry.getUsername().equals(currentUsername)) {
             holder.btnFollow.setVisibility(View.GONE);
         } else {
             holder.btnFollow.setVisibility(View.VISIBLE);
-            holder.btnFollow.setText(context.getString(R.string.feed_follow));
+            holder.btnFollow.setText(R.string.feed_followed);
             holder.btnFollow.setOnClickListener(v -> {
                 if (followListener != null) {
                     followListener.onFollowClick(entry, holder.getAdapterPosition());

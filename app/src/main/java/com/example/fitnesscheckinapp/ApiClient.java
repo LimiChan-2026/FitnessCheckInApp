@@ -163,6 +163,11 @@ public class ApiClient {
                 + "&username=" + urlEncode(excludeUsername), cb);
     }
 
+    /** 获取我的关注/粉丝列表（用于“发现好友”中标记已关注状态） */
+    public void getMyFollows(String username, Callback cb) {
+        get("/api/follows/my?username=" + urlEncode(username), cb);
+    }
+
     // ==================== HTTP 基础方法 ====================
 
     private void get(String path, Callback cb) {
