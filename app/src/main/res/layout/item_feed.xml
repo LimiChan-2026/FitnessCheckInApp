@@ -78,8 +78,8 @@
 
             <com.airbnb.lottie.LottieAnimationView
                 android:id="@+id/lottieHeart"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 app:lottie_fileName="animations/heart.json" />
 
