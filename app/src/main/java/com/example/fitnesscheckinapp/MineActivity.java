@@ -122,40 +122,57 @@ public class MineActivity extends AppCompatActivity {
     }
 
     /**
-     * 从数据库加载用户的最新信息（昵称、头像路径）
+     * 从数据库加载用户的最新信息（昵称、头像路径）。
+     * 查询在后台线程执行，避免阻塞页面切换动画。
      */
     private void loadUserInfo() {
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor c = db.query(DBHelper.TABLE_USER_INFO,
-                new String[]{DBHelper.COLUMN_USERNAME, DBHelper.COLUMN_NICKNAME, DBHelper.COLUMN_AVATAR_PATH},
-                DBHelper.COLUMN_USER_ID + "=?",
-                new String[]{String.valueOf(userId)}, null, null, null, "1");
-        
-        if (!c.moveToFirst()) {
-            c.close();
-            toLoginAndFinish();
-            return;
-        }
-        
-        username = c.getString(c.getColumnIndexOrThrow(DBHelper.COLUMN_USERNAME));
-        String nickname = c.getString(c.getColumnIndexOrThrow(DBHelper.COLUMN_NICKNAME));
-        String avatarPath = c.getString(c.getColumnIndexOrThrow(DBHelper.COLUMN_AVATAR_PATH));
-        c.close();
+        Bg.io(() -> {
+            SQLiteDatabase db = dbHelper.getReadableDatabase();
+            Cursor c = db.query(DBHelper.TABLE_USER_INFO,
+                    new String[]{DBHelper.COLUMN_USERNAME, DBHelper.COLUMN_NICKNAME, DBHelper.COLUMN_AVATAR_PATH},
+                    DBHelper.COLUMN_USER_ID + "=?",
+                    new String[]{String.valueOf(userId)}, null, null, null, "1");
 
-        // 更新 UI 显示
-        if (TextUtils.isEmpty(nickname)) nickname = username;
-        tvNickname.setText(getString(R.string.mine_nickname_value, nickname));
-        
-        if (TextUtils.isEmpty(avatarPath)) {
-            ivAvatar.setImageResource(R.drawable.default_avatar);
-        } else {
-            try {
-                // 加载保存的图片 URI
-                ivAvatar.setImageURI(Uri.parse(avatarPath));
-            } catch (Exception e) {
-                ivAvatar.setImageResource(R.drawable.default_avatar);
+            String[] result;
+            if (c.moveToFirst()) {
+                result = new String[]{
+                        c.getString(c.getColumnIndexOrThrow(DBHelper.COLUMN_USERNAME)),
+                        c.getString(c.getColumnIndexOrThrow(DBHelper.COLUMN_NICKNAME)),
+                        c.getString(c.getColumnIndexOrThrow(DBHelper.COLUMN_AVATAR_PATH))
+                };
+            } else {
+                result = null;
             }
-        }
+            c.close();
+            return result;
+        }, row -> {
+            if (isFinishing() || isDestroyed()) {
+                return;
+            }
+            if (row == null) {
+                toLoginAndFinish();
+                return;
+            }
+
+            username = row[0];
+            String nickname = row[1];
+            String avatarPath = row[2];
+
+            // 更新 UI 显示
+            if (TextUtils.isEmpty(nickname)) nickname = username;
+            tvNickname.setText(getString(R.string.mine_nickname_value, nickname));
+
+            if (TextUtils.isEmpty(avatarPath)) {
+                ivAvatar.setImageResource(R.drawable.default_avatar);
+            } else {
+                try {
+                    // 加载保存的图片 URI
+                    ivAvatar.setImageURI(Uri.parse(avatarPath));
+                } catch (Exception e) {
+                    ivAvatar.setImageResource(R.drawable.default_avatar);
+                }
+            }
+        });
     }
 
     /**
@@ -266,34 +283,43 @@ public class MineActivity extends AppCompatActivity {
     }
 
     /**
-     * 从运动记录表中汇总当前用户的运动成就数据
+     * 从运动记录表中汇总当前用户的运动成就数据。
+     * 查询与勋章文案构建在后台线程执行，完成后回主线程刷新。
      */
     private void loadSportSummary() {
-        int totalCount = 0;
-        int totalDurationSeconds = 0;
-        
-        Cursor c = dbHelper.getReadableDatabase().query(
-                DBHelper.TABLE_SPORT_RECORD,
-                new String[]{DBHelper.COLUMN_ID, DBHelper.COLUMN_DURATION},
-                DBHelper.COLUMN_USERNAME + "=?",
-                new String[]{username},
-                null, null, null
-        );
-        
-        while (c.moveToNext()) {
-            totalCount++;
-            totalDurationSeconds += c.getInt(c.getColumnIndexOrThrow(DBHelper.COLUMN_DURATION));
-        }
-        c.close();
-        
-        int totalMinutes = totalDurationSeconds / 60;
-        
-        // 更新 UI 统计
-        tvMineTotalCount.setText(getString(R.string.mine_total_count_value, totalCount));
-        tvMineTotalMinutes.setText(getString(R.string.mine_total_minutes_value, totalMinutes));
-        
-        // 根据数据构建勋章文案
-        tvBadgeList.setText(buildBadgeText(totalCount, totalMinutes));
+        Bg.io(() -> {
+            int totalCount = 0;
+            int totalDurationSeconds = 0;
+
+            Cursor c = dbHelper.getReadableDatabase().query(
+                    DBHelper.TABLE_SPORT_RECORD,
+                    new String[]{DBHelper.COLUMN_ID, DBHelper.COLUMN_DURATION},
+                    DBHelper.COLUMN_USERNAME + "=?",
+                    new String[]{username},
+                    null, null, null
+            );
+
+            while (c.moveToNext()) {
+                totalCount++;
+                totalDurationSeconds += c.getInt(c.getColumnIndexOrThrow(DBHelper.COLUMN_DURATION));
+            }
+            c.close();
+
+            return new int[]{totalCount, totalDurationSeconds / 60};
+        }, result -> {
+            if (isFinishing() || isDestroyed() || result == null) {
+                return;
+            }
+            int totalCount = result[0];
+            int totalMinutes = result[1];
+
+            // 更新 UI 统计
+            tvMineTotalCount.setText(getString(R.string.mine_total_count_value, totalCount));
+            tvMineTotalMinutes.setText(getString(R.string.mine_total_minutes_value, totalMinutes));
+
+            // 勋章文案需要依赖 UI 上下文重建（buildBadgeText 内部调用 getString）
+            tvBadgeList.setText(buildBadgeText(totalCount, totalMinutes));
+        });
     }
 
     /**
@@ -359,10 +385,12 @@ public class MineActivity extends AppCompatActivity {
     private void setupBottomNavigation() {
         Button btnHome = findViewById(R.id.btnHome);
         Button btnCheckIn = findViewById(R.id.btnCheckIn);
+        Button btnSocial = findViewById(R.id.btnSocial);
         Button btnData = findViewById(R.id.btnData);
-        btnHome.setOnClickListener(v -> startActivity(new Intent(this, MainActivity.class)));
-        btnCheckIn.setOnClickListener(v -> startActivity(new Intent(this, CheckInActivity.class)));
-        btnData.setOnClickListener(v -> startActivity(new Intent(this, DataActivity.class)));
+        btnHome.setOnClickListener(v -> Nav.go(this, MainActivity.class));
+        btnCheckIn.setOnClickListener(v -> Nav.go(this, CheckInActivity.class));
+        btnSocial.setOnClickListener(v -> Nav.go(this, SocialActivity.class));
+        btnData.setOnClickListener(v -> Nav.go(this, DataActivity.class));
     }
 
     @Override

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 新页面从左侧滑入（向左切换页面时使用） -->
+<translate xmlns:android="http://schemas.android.com/apk/res/android"
+    android:duration="200"
+    android:fromXDelta="-100%"
+    android:toXDelta="0%" />

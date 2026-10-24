@@ -24,4 +24,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "FitnessCheckInApp"
 include(":app")
+include(":server")
  

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 淡入：用于登录/注册等流程性页面切换 -->
+<alpha xmlns:android="http://schemas.android.com/apk/res/android"
+    android:duration="240"
+    android:fromAlpha="0.0"
+    android:toAlpha="1.0" />

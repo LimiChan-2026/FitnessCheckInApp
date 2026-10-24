@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 旧页面向右让位（向左切换页面时使用，与 slide_in_left 配套） -->
+<translate xmlns:android="http://schemas.android.com/apk/res/android"
+    android:duration="200"
+    android:fromXDelta="0%"
+    android:toXDelta="25%" />

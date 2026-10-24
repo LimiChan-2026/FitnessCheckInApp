@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    android:background="@drawable/bg_card"
+    android:orientation="vertical"
+    android:padding="14dp">
+
+    <!-- 动态作者昵称 -->
+    <TextView
+        android:id="@+id/tvFeedNickname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/primary_dark"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <!-- 运动内容：类型 + 时长 + 卡路里 -->
+    <TextView
+        android:id="@+id/tvFeedSportInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:textColor="@color/text_primary"
+        android:textSize="15sp" />
+
+    <!-- 打卡时间 -->
+    <TextView
+        android:id="@+id/tvFeedTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textColor="@color/text_secondary"
+        android:textSize="13sp" />
+
+    <!-- 运动备注（无则隐藏） -->
+    <TextView
+        android:id="@+id/tvFeedRemark"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/bg_highlight"
+        android:padding="10dp"
+        android:textColor="@color/text_primary"
+        android:textSize="14sp" />
+
+    <!-- 互动按钮行：点赞 + 关注 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="end"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnFeedFollow"
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/bg_button_secondary"
+            android:minWidth="0dp"
+            android:paddingHorizontal="16dp"
+            android:text="@string/feed_follow"
+            android:textColor="@color/text_primary"
+            android:textSize="13sp" />
+
+        <Button
+            android:id="@+id/btnFeedLike"
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:background="@drawable/bg_button_secondary"
+            android:minWidth="0dp"
+            android:paddingHorizontal="16dp"
+            android:text="@string/feed_like"
+            android:textColor="@color/text_primary"
+            android:textSize="13sp" />
+    </LinearLayout>
+</LinearLayout>

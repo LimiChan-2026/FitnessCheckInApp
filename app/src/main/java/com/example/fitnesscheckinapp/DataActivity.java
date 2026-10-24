@@ -168,91 +168,112 @@ public class DataActivity extends AppCompatActivity {
     }
 
     /**
-     * 核心逻辑：从数据库加载运动记录并进行过滤与统计
+     * 核心逻辑：从数据库加载运动记录并进行过滤与统计。
+     * 数据库查询与内存过滤在后台线程执行，完成后回主线程刷新 UI，
+     * 避免阻塞页面切换动画。
      */
     private void loadRecords() {
         if (!ensureLoginUser()) {
             return;
         }
+        final int filter = currentFilter;
+        final String selectedDate = this.selectedDate;
 
-        recordList.clear();
-        int totalCount = 0;
-        int totalDurationSeconds = 0;
-        int totalCalorie = 0;
+        Bg.io(() -> {
+            List<SportRecord> result = new ArrayList<>();
+            int totalCount = 0;
+            int totalDurationSeconds = 0;
+            int totalCalorie = 0;
 
-        // 1. 查询当前用户的所有记录（按 ID 倒序，即时间从新到旧）
-        SQLiteDatabase database = dbHelper.getReadableDatabase();
-        Cursor cursor = database.query(
-                DBHelper.TABLE_SPORT_RECORD,
-                null,
-                DBHelper.COLUMN_USERNAME + " = ?",
-                new String[]{currentUsername},
-                null,
-                null,
-                DBHelper.COLUMN_ID + " DESC"
-        );
+            // 1. 查询当前用户的所有记录（按 ID 倒序，即时间从新到旧）
+            SQLiteDatabase database = dbHelper.getReadableDatabase();
+            Cursor cursor = database.query(
+                    DBHelper.TABLE_SPORT_RECORD,
+                    null,
+                    DBHelper.COLUMN_USERNAME + " = ?",
+                    new String[]{currentUsername},
+                    null,
+                    null,
+                    DBHelper.COLUMN_ID + " DESC"
+            );
 
-        // 2. 准备筛选比较所需的日期字符串
-        String todayDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_YEAR, -6);
-        String last7DaysStart = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.getTime());
+            // 2. 准备筛选比较所需的日期字符串
+            String todayDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.DAY_OF_YEAR, -6);
+            String last7DaysStart = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.getTime());
 
-        // 3. 遍历查询结果并进行内存筛选
-        while (cursor.moveToNext()) {
-            int id = cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.COLUMN_ID));
-            String sportType = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.COLUMN_SPORT_TYPE));
-            int duration = cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.COLUMN_DURATION));
-            int calorie = cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.COLUMN_CALORIE));
-            String createTime = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.COLUMN_CREATE_TIME));
-            String remark = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.COLUMN_REMARK));
-            
-            // 提取日期部分用于比较 (yyyy-MM-dd)
-            String datePart = createTime != null && createTime.length() >= 10 ? createTime.substring(0, 10) : "";
+            // 3. 遍历查询结果并进行内存筛选
+            while (cursor.moveToNext()) {
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.COLUMN_ID));
+                String sportType = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.COLUMN_SPORT_TYPE));
+                int duration = cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.COLUMN_DURATION));
+                int calorie = cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.COLUMN_CALORIE));
+                String createTime = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.COLUMN_CREATE_TIME));
+                String remark = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.COLUMN_REMARK));
 
-            // 根据当前选中的过滤器判断是否包含该记录
-            if (!matchesFilter(datePart, todayDate, last7DaysStart)) {
-                continue;
+                // 提取日期部分用于比较 (yyyy-MM-dd)
+                String datePart = createTime != null && createTime.length() >= 10 ? createTime.substring(0, 10) : "";
+
+                // 根据当前选中的过滤器判断是否包含该记录
+                if (!matchesFilter(filter, selectedDate, datePart, todayDate, last7DaysStart)) {
+                    continue;
+                }
+
+                result.add(new SportRecord(id, sportType, duration, calorie, createTime, remark));
+                totalCount++;
+                totalDurationSeconds += duration;
+                totalCalorie += calorie;
+            }
+            cursor.close();
+
+            return new Object[]{result, totalCount, totalDurationSeconds, totalCalorie};
+        }, result -> {
+            // 主线程：仅做 UI 刷新
+            if (isFinishing() || isDestroyed() || result == null) {
+                return;
+            }
+            @SuppressWarnings("unchecked")
+            List<SportRecord> list = (List<SportRecord>) result[0];
+            int totalCount = (int) result[1];
+            int totalDurationSeconds = (int) result[2];
+            int totalCalorie = (int) result[3];
+
+            recordList.clear();
+            recordList.addAll(list);
+
+            // 4. 更新 UI 统计文案
+            tvTotalCount.setText(getString(R.string.summary_total_count_value, totalCount));
+            tvTotalMinutes.setText(getString(R.string.summary_total_minutes_value, totalDurationSeconds / 60));
+            tvTotalCalorie.setText(getString(R.string.summary_total_calorie_value, totalCalorie));
+
+            // 5. 根据结果是否为空切换显示视图
+            if (recordList.isEmpty()) {
+                tvEmptyView.setVisibility(View.VISIBLE);
+                rvRecords.setVisibility(View.GONE);
+            } else {
+                tvEmptyView.setVisibility(View.GONE);
+                rvRecords.setVisibility(View.VISIBLE);
             }
 
-            // 添加到显示列表并累加统计数据
-            recordList.add(new SportRecord(id, sportType, duration, calorie, createTime, remark));
-            totalCount++;
-            totalDurationSeconds += duration;
-            totalCalorie += calorie;
-        }
-        cursor.close();
-
-        // 4. 更新 UI 统计文案
-        tvTotalCount.setText(getString(R.string.summary_total_count_value, totalCount));
-        tvTotalMinutes.setText(getString(R.string.summary_total_minutes_value, totalDurationSeconds / 60));
-        tvTotalCalorie.setText(getString(R.string.summary_total_calorie_value, totalCalorie));
-
-        // 5. 根据结果是否为空切换显示视图
-        if (recordList.isEmpty()) {
-            tvEmptyView.setVisibility(View.VISIBLE);
-            rvRecords.setVisibility(View.GONE);
-        } else {
-            tvEmptyView.setVisibility(View.GONE);
-            rvRecords.setVisibility(View.VISIBLE);
-        }
-
-        updateFilterButtonState();
-        recordAdapter.notifyDataSetChanged(); // 刷新列表展示
+            updateFilterButtonState();
+            recordAdapter.notifyDataSetChanged(); // 刷新列表展示
+        });
     }
 
     /**
-     * 判断某条记录的日期是否符合当前的筛选条件
+     * 判断某条记录的日期是否符合当前的筛选条件（纯函数，供后台线程调用）
      */
-    private boolean matchesFilter(String datePart, String todayDate, String last7DaysStart) {
-        if (currentFilter == FILTER_TODAY) {
+    private boolean matchesFilter(int filter, String selectedDate, String datePart,
+                                   String todayDate, String last7DaysStart) {
+        if (filter == FILTER_TODAY) {
             return todayDate.equals(datePart);
         }
-        if (currentFilter == FILTER_LAST_7_DAYS) {
+        if (filter == FILTER_LAST_7_DAYS) {
             // 在最近7天范围内
             return datePart.compareTo(last7DaysStart) >= 0 && datePart.compareTo(todayDate) <= 0;
         }
-        if (currentFilter == FILTER_SPECIFIC_DATE) {
+        if (filter == FILTER_SPECIFIC_DATE) {
             return !TextUtils.isEmpty(selectedDate) && selectedDate.equals(datePart);
         }
         return true; // FILTER_ALL 模式，全部匹配
@@ -316,11 +337,13 @@ public class DataActivity extends AppCompatActivity {
     private void setupBottomNavigation() {
         Button btnHome = findViewById(R.id.btnHome);
         Button btnCheckIn = findViewById(R.id.btnCheckIn);
+        Button btnSocial = findViewById(R.id.btnSocial);
         Button btnMine = findViewById(R.id.btnMine);
 
-        btnHome.setOnClickListener(v -> startActivity(new Intent(this, MainActivity.class)));
-        btnCheckIn.setOnClickListener(v -> startActivity(new Intent(this, CheckInActivity.class)));
-        btnMine.setOnClickListener(v -> startActivity(new Intent(this, MineActivity.class)));
+        btnHome.setOnClickListener(v -> Nav.go(this, MainActivity.class));
+        btnCheckIn.setOnClickListener(v -> Nav.go(this, CheckInActivity.class));
+        btnSocial.setOnClickListener(v -> Nav.go(this, SocialActivity.class));
+        btnMine.setOnClickListener(v -> Nav.go(this, MineActivity.class));
     }
 
     @Override

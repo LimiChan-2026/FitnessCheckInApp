@@ -1,9 +1,35 @@
 <resources>
-    <string name="app_name">FitnessCheckInApp</string>
+    <string name="app_name">健身打卡</string>
     <string name="nav_home">首页</string>
     <string name="nav_check_in">打卡</string>
+    <string name="nav_social">社区</string>
     <string name="nav_data">数据</string>
     <string name="nav_mine">我的</string>
+
+    <!-- 社区页 -->
+    <string name="social_title">社区</string>
+    <string name="social_desc">看看小伙伴们的运动动态，和大家一起坚持</string>
+    <string name="social_refresh">刷新</string>
+    <string name="social_leaderboard_title">运动排行榜</string>
+    <string name="social_leaderboard_hint">按时长排名，快去和小伙伴比拼吧</string>
+    <string name="leaderboard_last_7_days">本周榜</string>
+    <string name="leaderboard_all">总榜</string>
+    <string name="leaderboard_empty">暂无上榜数据，先去打卡吧</string>
+    <string name="leaderboard_row_value">第%1$d名  %2$s  运动%3$d分钟 · 打卡%4$d次</string>
+    <string name="social_feed_title">好友动态</string>
+    <string name="social_feed_hint">关注的好友打卡后会出现在这里，每15秒自动更新，也可下拉刷新</string>
+    <string name="feed_empty">暂无动态，关注好友后即可看到 TA 们的打卡</string>
+    <string name="feed_sport_info_value">完成了 %1$s，时长 %2$d 分 %3$d 秒，消耗 %4$d 千卡</string>
+    <string name="feed_time_value">打卡时间：%1$s</string>
+    <string name="feed_like">点赞 (%1$d)</string>
+    <string name="feed_liked">已赞 (%1$d)</string>
+    <string name="feed_follow">+ 关注</string>
+    <string name="toast_sync_failed_offline">云端同步失败，记录已保存在本地</string>
+    <string name="toast_login_failed_offline">账号或密码错误（离线模式）</string>
+    <string name="toast_login_offline_mode">服务器未连接，已切换离线模式</string>
+    <string name="toast_register_success_offline">注册成功（离线模式，联网后可在其他设备登录）</string>
+    <string name="toast_register_success_local_exists">注册成功（本地已有同名账号，可直接登录）</string>
+    <string name="toast_reset_password_local_only">注意：服务器端密码未同步修改</string>
     <string name="home_title">首页</string>
     <string name="home_desc">查看你今天的运动概览和最新训练记录</string>
     <string name="home_today_overview_title">今日运动概览</string>
@@ -68,7 +94,7 @@
     <string name="mine_badge_hint">达成条件后会显示已解锁，未达成则保持未解锁状态</string>
     <string name="mine_edit_nickname_title">修改昵称</string>
     <string name="mine_about_title">关于系统</string>
-    <string name="mine_about_message">App 名称：健身打卡系统\n版本：1.0.0</string>
+    <string name="mine_about_message">应用名称：健身打卡系统\n版本：1.0.0</string>
     <string name="mine_nickname_value">昵称：%1$s</string>
     <string name="mine_nickname_prefix">昵称：</string>
     <string name="mine_avatar_desc">用户头像</string>

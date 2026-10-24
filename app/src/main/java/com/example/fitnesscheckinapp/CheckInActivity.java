@@ -55,14 +55,16 @@ public class CheckInActivity extends AppCompatActivity {
     private boolean isSavingDialogShowing = false; // 标记保存对话框是否正在显示
 
     private DBHelper dbHelper;          // 数据库辅助类
+    private ApiClient apiClient;        // 网络客户端（打卡上云）
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check_in);
 
-        // 初始化数据库助手
+        // 初始化数据库助手与网络客户端
         dbHelper = new DBHelper(this);
+        apiClient = new ApiClient(this);
         
         // 执行初始化逻辑
         initViews();               // 绑定控件
@@ -302,11 +304,35 @@ public class CheckInActivity extends AppCompatActivity {
         long result = database.insert(DBHelper.TABLE_SPORT_RECORD, null, values);
         if (result != -1) {
             Toast.makeText(this, R.string.toast_training_save_success, Toast.LENGTH_SHORT).show();
+            // 异步同步到服务端（好友动态与排行榜数据来源），失败不影响本地使用
+            syncRecordToServer(username, sportType, duration, calorie, createTime, remark);
             resetTraining(true); // 保存成功，清空所有输入
         } else {
             Toast.makeText(this, R.string.toast_save_failed, Toast.LENGTH_SHORT).show();
             resetTraining(false); // 保存失败，保留输入内容供重试
         }
+    }
+
+    /**
+     * 将打卡记录上报服务端（社区动态、排行榜的数据源）。
+     * 本地已保存成功，云端失败只提示不上抛，保证离线可用。
+     */
+    private void syncRecordToServer(String username, String sportType, int duration,
+                                     int calorie, String createTime, String remark) {
+        apiClient.addRecord(username, sportType, duration, calorie, createTime, remark,
+                new ApiClient.Callback() {
+                    @Override
+                    public void onSuccess(org.json.JSONObject data) {
+                        // 云端同步成功：静默，避免打扰；社区页将看到该动态
+                    }
+
+                    @Override
+                    public void onFailure(String message) {
+                        runOnUiThread(() -> Toast.makeText(CheckInActivity.this,
+                                getString(R.string.toast_sync_failed_offline),
+                                Toast.LENGTH_SHORT).show());
+                    }
+                });
     }
 
     /**
@@ -386,12 +412,14 @@ public class CheckInActivity extends AppCompatActivity {
      */
     private void setupBottomNavigation() {
         Button btnHome = findViewById(R.id.btnHome);
+        Button btnSocial = findViewById(R.id.btnSocial);
         Button btnData = findViewById(R.id.btnData);
         Button btnMine = findViewById(R.id.btnMine);
 
-        btnHome.setOnClickListener(v -> startActivity(new Intent(this, MainActivity.class)));
-        btnData.setOnClickListener(v -> startActivity(new Intent(this, DataActivity.class)));
-        btnMine.setOnClickListener(v -> startActivity(new Intent(this, MineActivity.class)));
+        btnHome.setOnClickListener(v -> Nav.go(this, MainActivity.class));
+        btnSocial.setOnClickListener(v -> Nav.go(this, SocialActivity.class));
+        btnData.setOnClickListener(v -> Nav.go(this, DataActivity.class));
+        btnMine.setOnClickListener(v -> Nav.go(this, MineActivity.class));
     }
 
     @Override
