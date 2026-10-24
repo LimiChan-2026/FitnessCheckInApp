@@ -175,7 +175,8 @@
                         android:paddingHorizontal="16dp"
                         android:text="@string/social_find_friends"
                         android:textColor="@color/white"
-                        android:textSize="13sp" />
+                        android:textSize="13sp"
+                        app:backgroundTint="@color/primary" />
                 </LinearLayout>
 
                 <TextView

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- “发现好友”搜索结果行：昵称 + 用户名 + 关注按钮 -->
+<!-- “发现好友”搜索结果行：昵称 + 用户名 + 关注/取消关注按钮 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
@@ -30,14 +31,16 @@
             android:textSize="12sp" />
     </LinearLayout>
 
+    <!-- 关注按钮：显式 backgroundTint（Material3 下 android:background 会被忽略），
+         未关注=主题绿底白字，已关注=浅绿底绿字（代码动态切换） -->
     <Button
         android:id="@+id/btnResultFollow"
         android:layout_width="wrap_content"
         android:layout_height="38dp"
-        android:background="@drawable/bg_button_secondary"
         android:minWidth="0dp"
         android:paddingHorizontal="16dp"
         android:text="@string/feed_follow"
-        android:textColor="@color/primary"
-        android:textSize="13sp" />
+        android:textColor="@color/white"
+        android:textSize="13sp"
+        app:backgroundTint="@color/primary" />
 </LinearLayout>

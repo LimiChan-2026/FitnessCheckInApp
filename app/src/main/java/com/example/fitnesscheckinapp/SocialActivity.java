@@ -24,9 +24,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -344,7 +342,8 @@ public class SocialActivity extends AppCompatActivity {
     }
 
     /**
-     * "发现好友"弹窗：按昵称/用户名搜索并关注，可随时把取消关注的好友加回。
+     * "发现好友"弹窗：按昵称/用户名搜索并关注。
+     * 关注状态由服务端搜索接口直接返回（following 字段），保证与当前状态实时一致。
      */
     private void showFindFriendsDialog() {
         View content = LayoutInflater.from(this).inflate(R.layout.dialog_find_friends, null);
@@ -360,31 +359,10 @@ public class SocialActivity extends AppCompatActivity {
                 .create();
         dialog.show();
 
-        // 先拉取我的关注列表，用于在搜索结果中标记"已关注"状态
-        final Set<String> followingSet = new HashSet<>();
-        apiClient.getMyFollows(currentUsername, new ApiClient.Callback() {
-            @Override
-            public void onSuccess(JSONObject data) {
-                JSONArray arr = data.optJSONArray("following");
-                if (arr != null) {
-                    for (int i = 0; i < arr.length(); i++) {
-                        followingSet.add(arr.optString(i));
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(String message) {
-                // 关注列表加载失败不影响搜索，按钮状态以接口返回为准
-            }
-        });
-
         btnSearch.setOnClickListener(v ->
-                searchAndRenderUsers(etKeyword.getText().toString().trim(),
-                        llResults, tvHint, followingSet));
+                searchAndRenderUsers(etKeyword.getText().toString().trim(), llResults, tvHint));
         etKeyword.setOnEditorActionListener((v, actionId, event) -> {
-            searchAndRenderUsers(etKeyword.getText().toString().trim(),
-                    llResults, tvHint, followingSet);
+            searchAndRenderUsers(etKeyword.getText().toString().trim(), llResults, tvHint);
             return true;
         });
     }
@@ -392,8 +370,7 @@ public class SocialActivity extends AppCompatActivity {
     /**
      * 搜索用户并把结果渲染为可关注的行
      */
-    private void searchAndRenderUsers(String keyword, LinearLayout llResults,
-                                       TextView tvHint, Set<String> followingSet) {
+    private void searchAndRenderUsers(String keyword, LinearLayout llResults, TextView tvHint) {
         if (TextUtils.isEmpty(keyword)) {
             tvHint.setText(R.string.hint_search_user);
             tvHint.setVisibility(View.VISIBLE);
@@ -417,7 +394,7 @@ public class SocialActivity extends AppCompatActivity {
                 for (int i = 0; i < list.length(); i++) {
                     JSONObject user = list.optJSONObject(i);
                     if (user != null) {
-                        addUserRow(llResults, user, followingSet);
+                        addUserRow(llResults, user);
                     }
                 }
             }
@@ -431,9 +408,10 @@ public class SocialActivity extends AppCompatActivity {
     }
 
     /**
-     * 渲染一行搜索结果：昵称、@用户名、关注/已关注按钮
+     * 渲染一行搜索结果：昵称、@用户名、关注/取消关注按钮。
+     * 取消关注后其动态会从动态流消失（服务端 feed 仅返回已关注者）。
      */
-    private void addUserRow(LinearLayout llResults, JSONObject user, Set<String> followingSet) {
+    private void addUserRow(LinearLayout llResults, JSONObject user) {
         View row = LayoutInflater.from(this).inflate(R.layout.item_search_user, llResults, false);
         TextView tvNickname = row.findViewById(R.id.tvResultNickname);
         TextView tvUsername = row.findViewById(R.id.tvResultUsername);
@@ -443,24 +421,19 @@ public class SocialActivity extends AppCompatActivity {
         String nickname = user.optString("nickname", username);
         tvNickname.setText(nickname);
         tvUsername.setText("@" + username);
-        updateFollowButton(btnFollow, followingSet.contains(username));
+        updateFollowButton(btnFollow, user.optBoolean("following"));
 
         btnFollow.setOnClickListener(v -> apiClient.toggleFollow(currentUsername, username,
                 new ApiClient.Callback() {
                     @Override
                     public void onSuccess(JSONObject data) {
                         boolean nowFollowing = data.optBoolean("following");
-                        if (nowFollowing) {
-                            followingSet.add(username);
-                        } else {
-                            followingSet.remove(username);
-                        }
                         updateFollowButton(btnFollow, nowFollowing);
                         Toast.makeText(SocialActivity.this,
                                 getString(nowFollowing ? R.string.toast_followed
                                         : R.string.toast_unfollowed, nickname),
                                 Toast.LENGTH_SHORT).show();
-                        loadFeed(); // 关注变化后刷新动态流
+                        loadFeed(); // 关注变化后刷新动态流（取消关注则对方动态立即消失）
                     }
 
                     @Override
@@ -473,10 +446,17 @@ public class SocialActivity extends AppCompatActivity {
     }
 
     /**
-     * 关注按钮状态：已关注显示"已关注"，否则显示"+ 关注"
+     * 关注按钮状态：已关注=浅绿底绿字，未关注=主题绿底白字
      */
     private void updateFollowButton(Button btn, boolean following) {
         btn.setText(following ? R.string.feed_followed : R.string.feed_follow);
+        if (btn instanceof com.google.android.material.button.MaterialButton) {
+            com.google.android.material.button.MaterialButton mb =
+                    (com.google.android.material.button.MaterialButton) btn;
+            mb.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
+                    getColor(following ? R.color.secondary : R.color.primary)));
+            mb.setTextColor(getColor(following ? R.color.primary : R.color.white));
+        }
     }
 
     /**

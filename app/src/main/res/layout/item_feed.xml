@@ -62,8 +62,10 @@
             android:minWidth="0dp"
             android:paddingHorizontal="16dp"
             android:text="@string/feed_follow"
-            android:textColor="@color/text_primary"
-            android:textSize="13sp" />
+            android:textColor="@color/primary"
+            android:textSize="13sp"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            app:backgroundTint="@color/secondary" />
 
         <!-- 点赞按钮：Lottie 爱心（点赞时爆炸动画）+ 计数 -->
         <LinearLayout
