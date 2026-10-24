@@ -68,6 +68,7 @@ public class LoginActivity extends AppCompatActivity {
         Button btnLogin = findViewById(R.id.btnLogin);
         TextView tvGoRegister = findViewById(R.id.tvGoRegister);
         TextView tvForgetPassword = findViewById(R.id.tvForgetPassword);
+        TextView tvServerSetting = findViewById(R.id.tvServerSetting);
 
         // 登录按钮：触发身份验证逻辑
         btnLogin.setOnClickListener(v -> login());
@@ -77,6 +78,39 @@ public class LoginActivity extends AppCompatActivity {
 
         // “忘记密码”：跳转到找回密码页面（淡入过渡）
         tvForgetPassword.setOnClickListener(v -> Nav.flow(this, new Intent(this, ForgetPasswordActivity.class)));
+
+        // 服务器地址设置（真机调试必备：改为电脑局域网IP）
+        refreshServerSettingView(tvServerSetting);
+        tvServerSetting.setOnClickListener(v -> showServerSettingDialog(tvServerSetting));
+    }
+
+    /** 显示当前服务器地址 */
+    private void refreshServerSettingView(TextView tv) {
+        tv.setText(getString(R.string.server_setting_entry, apiClient.getBaseUrl()));
+    }
+
+    /**
+     * 服务器地址设置对话框：真机与电脑连同一WiFi后，
+     * 把地址改为电脑局域网IP（如 http://192.168.1.3:8080）。
+     */
+    private void showServerSettingDialog(TextView tvServerSetting) {
+        android.widget.EditText etAddress = new android.widget.EditText(this);
+        etAddress.setText(apiClient.getBaseUrl());
+        etAddress.setHint(R.string.server_setting_hint);
+        int p = (int) (16 * getResources().getDisplayMetrics().density);
+        etAddress.setPadding(p, p, p, p);
+
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle(R.string.server_setting_title)
+                .setMessage(R.string.server_setting_hint)
+                .setView(etAddress)
+                .setPositiveButton(R.string.action_confirm, (dialog, which) -> {
+                    apiClient.setBaseUrl(etAddress.getText().toString().trim());
+                    refreshServerSettingView(tvServerSetting);
+                    Toast.makeText(this, R.string.toast_server_saved, Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton(R.string.action_cancel, null)
+                .show();
     }
 
     /**

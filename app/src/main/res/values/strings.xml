@@ -112,6 +112,10 @@
 
     <string name="login_title">登录</string>
     <string name="login_desc">请输入账号和密码进行本地登录</string>
+    <string name="server_setting_entry">服务器：%1$s</string>
+    <string name="server_setting_title">服务器地址</string>
+    <string name="server_setting_hint">模拟器：http://10.0.2.2:8080\n真机：http://电脑局域网IP:8080（手机与电脑需连同一WiFi）</string>
+    <string name="toast_server_saved">服务器地址已保存</string>
     <string name="register_title">注册</string>
     <string name="register_desc">创建你的本地账号后即可登录使用</string>
     <string name="forget_password_title">找回密码</string>
