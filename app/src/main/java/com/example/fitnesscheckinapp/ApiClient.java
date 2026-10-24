@@ -205,7 +205,7 @@ public class ApiClient {
                 JSONObject json;
                 JSONObject data;
                 if (trimmed.startsWith("[")) {
-                    // 数组响应统一包装为 {code:0, data:[...]}
+                    // 数组响应统一包装为 {list: [...]}
                     data = new JSONObject();
                     data.put("list", new org.json.JSONArray(trimmed));
                     json = data;
@@ -214,11 +214,10 @@ public class ApiClient {
                     if (json.has("data")) {
                         data = json.getJSONObject("data");
                     } else {
-                        data = new JSONObject();
-                        // 登录/注册等接口直接返回用户对象（含 username 字段）
-                        if (json.has("username")) {
-                            data = json;
-                        }
+                        // 服务端多数接口（登录/注册/点赞/关注等）把业务字段放在顶层：
+                        // {code, message, username..., liked, likeCount, following...}
+                        // 统一把整个响应对象作为数据交给回调，由调用方按需取字段
+                        data = json;
                     }
                 }
 

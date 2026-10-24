@@ -12,13 +12,13 @@
         android:background="@drawable/bg_card"
         android:orientation="vertical">
 
-        <!-- 跑步 Lottie 动画：循环播放的吉祥物 -->
+        <!-- 跑步 Lottie 动画：循环播放的跑者吉祥物（15图层完整素材） -->
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/lottieRunner"
             android:layout_width="120dp"
             android:layout_height="120dp"
             android:layout_gravity="center_horizontal"
-            app:lottie_fileName="animations/running.json"
+            app:lottie_fileName="animations/running_full.json"
             app:lottie_loop="true"
             app:lottie_autoPlay="true"
             xmlns:app="http://schemas.android.com/apk/res-auto" />

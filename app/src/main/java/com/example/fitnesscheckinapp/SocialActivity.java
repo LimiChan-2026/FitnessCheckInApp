@@ -285,8 +285,8 @@ public class SocialActivity extends AppCompatActivity {
     }
 
     /**
-     * 点赞/取消点赞：点赞成功时爱心爆炸动画由 Adapter 持久帧切换触发，
-     * 新点赞额外从头播放一遍爆炸效果。
+     * 点赞/取消点赞：新点赞打上 justLiked 标记，
+     * Adapter 重新绑定该条目时播放爱心爆炸动画（避免动画被 rebind 打断）。
      */
     private void onLikeClicked(FeedEntry entry, int position) {
         boolean wasLiked = entry.isLikedByMe();
@@ -296,16 +296,10 @@ public class SocialActivity extends AppCompatActivity {
                 boolean nowLiked = data.optBoolean("liked");
                 entry.setLikedByMe(nowLiked);
                 entry.setLikeCount(data.optInt("likeCount"));
-                feedAdapter.notifyItemChanged(position);
-                // 新点赞：播放完整爱心爆炸动画
-                if (nowLiked && !wasLiked && rvFeed.findViewHolderForAdapterPosition(position) != null) {
-                    var holder = (FeedAdapter.FeedViewHolder) rvFeed.findViewHolderForAdapterPosition(position);
-                    if (holder != null) {
-                        holder.lottieHeart.setMinAndMaxProgress(0f, 1f);
-                        holder.lottieHeart.setProgress(0f);
-                        holder.lottieHeart.playAnimation();
-                    }
+                if (nowLiked && !wasLiked) {
+                    entry.markJustLiked();
                 }
+                feedAdapter.notifyItemChanged(position);
             }
 
             @Override

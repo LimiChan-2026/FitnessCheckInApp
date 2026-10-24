@@ -76,13 +76,24 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
                     R.string.record_remark_value, entry.getRemark()));
         }
 
-        // 点赞区域：Lottie 爱心（已赞停在爱心帧）+ 计数
-        holder.lottieHeart.setMinAndMaxProgress(0f, 1f);
+        // 点赞区域：Lottie 爱心状态渲染
         if (entry.isLikedByMe()) {
-            // 已赞：直接停在动画最后一帧（完整爱心）
-            holder.lottieHeart.setMinAndMaxProgress(0.55f, 1f);
-            holder.lottieHeart.setProgress(1f);
+            if (entry.isJustLiked()) {
+                // 新点赞：完整播放爱心爆炸动画（绑定完成后启动，避免被 rebind 打断）
+                entry.clearJustLiked();
+                holder.lottieHeart.setMinAndMaxProgress(0f, 1f);
+                holder.lottieHeart.setProgress(0f);
+                holder.lottieHeart.playAnimation();
+            } else {
+                // 已赞的静态展示：停在动画最后一帧（完整爱心）
+                holder.lottieHeart.cancelAnimation();
+                holder.lottieHeart.setMinAndMaxProgress(0.55f, 1f);
+                holder.lottieHeart.setProgress(1f);
+            }
         } else {
+            // 未赞：回到动画起点（空心/初始状态）
+            holder.lottieHeart.cancelAnimation();
+            holder.lottieHeart.setMinAndMaxProgress(0f, 1f);
             holder.lottieHeart.setProgress(0f);
         }
         holder.tvLikeCount.setText(context.getString(R.string.feed_like_count, entry.getLikeCount()));

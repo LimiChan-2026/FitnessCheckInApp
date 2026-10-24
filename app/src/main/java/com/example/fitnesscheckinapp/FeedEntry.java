@@ -78,4 +78,19 @@ public class FeedEntry {
     public void setLikedByMe(boolean likedByMe) {
         this.likedByMe = likedByMe;
     }
+
+    /** 刚完成一次"新点赞"的标记：Adapter 绑定时据此播放爱心爆炸动画（一次性） */
+    private boolean justLiked;
+
+    public void markJustLiked() {
+        this.justLiked = true;
+    }
+
+    public boolean isJustLiked() {
+        return justLiked;
+    }
+
+    public void clearJustLiked() {
+        this.justLiked = false;
+    }
 }
