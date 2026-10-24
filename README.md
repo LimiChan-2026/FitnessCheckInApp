@@ -63,6 +63,16 @@ App 登录页底部有「服务器」设置入口，点击可修改并持久化�
   X:\gradlew.bat :server:test
   ```
 
+## 常见问题
+
+**Q：Gradle Sync 报找不到 JDK 17？**
+`gradle.properties` 里的 `org.gradle.java.installations.paths` 指向的是原作者机器的 JDK 17 路径。
+请安装 JDK 17，并把该行改为你本机的路径（如 `C\:/Program Files/Java/jdk-17`），或直接删除该行
+（Gradle 会联网自动下载，需要可访问外网）。
+
+**Q：服务端单元测试报 ClassNotFoundException？**
+中文路径 + Windows GBK 编码导致（JDK-8272597），按上文"中文路径注意事项"处理。
+
 ## 更多文档
 
 - 服务端 API 一览、部署细节、测试说明：见 [`server/README.md`](server/README.md)
