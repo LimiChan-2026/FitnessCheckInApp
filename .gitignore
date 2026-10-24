@@ -29,3 +29,5 @@ Thumbs.db
 
 # Cursor / LLM chat history
 /.llm-chat-history/
+# IDE 状态备份（个人环境，不共享）
+/.idea.bak/
