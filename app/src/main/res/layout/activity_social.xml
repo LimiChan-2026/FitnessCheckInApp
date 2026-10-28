@@ -190,13 +190,18 @@
                     android:textColor="@color/text_secondary"
                     android:textSize="14sp" />
 
+                <!-- 固定高度的动态列表：避免 RecyclerView 在外层 ScrollView 内使用
+                     wrap_content 时高度不随数据刷新（只渲染第一条）的问题；
+                     nestedScrollingEnabled=true 使列表在卡片内独立滚动 -->
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvFeed"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="480dp"
                     android:layout_marginTop="12dp"
-                    android:nestedScrollingEnabled="false"
-                    android:overScrollMode="never" />
+                    android:clipToPadding="false"
+                    android:nestedScrollingEnabled="true"
+                    android:overScrollMode="never"
+                    android:paddingBottom="8dp" />
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
